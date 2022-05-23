@@ -100,6 +100,7 @@ impl Middleware for Redirect {
             if REDIRECT_CODES.contains(&res.status()) {
                 if let Some(location) = res.header(headers::LOCATION) {
                     let http_req: &mut http::Request = req.as_mut();
+                    http_req.insert_header(headers::REFERER, base_url.as_str());
                     let url = match Url::parse(location.last().as_str()) {
                         Ok(valid_url) => {
                             base_url = valid_url;
