@@ -101,6 +101,7 @@ impl Middleware for Redirect {
                 if let Some(location) = res.header(headers::LOCATION) {
                     let http_req: &mut http::Request = req.as_mut();
                     http_req.insert_header(headers::REFERER, base_url.as_str());
+                    http_req.remove_header(headers::AUTHORIZATION);
                     let url = match Url::parse(location.last().as_str()) {
                         Ok(valid_url) => {
                             base_url = valid_url;
