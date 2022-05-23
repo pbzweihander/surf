@@ -100,7 +100,7 @@ impl Middleware for Redirect {
             if REDIRECT_CODES.contains(&res.status()) {
                 if let Some(location) = res.header(headers::LOCATION) {
                     let http_req: &mut http::Request = req.as_mut();
-                    *http_req.url_mut() = match Url::parse(location.last().as_str()) {
+                    let url = match Url::parse(location.last().as_str()) {
                         Ok(valid_url) => {
                             base_url = valid_url;
                             base_url.clone()
@@ -112,6 +112,8 @@ impl Middleware for Redirect {
                             e => return Err(e.into()),
                         },
                     };
+                    http_req.insert_header(headers::HOST, url.host().unwrap().to_string());
+                    *http_req.url_mut() = url;
                 }
             } else {
                 break;
